@@ -9,3 +9,5 @@
 #include "ext/vec/DM_Vec4.h"
 #include "ext/vec/DM_Vec3.h"
 #include "ext/vec/DM_Vec2.h"
+
+#include "ext/quat/DM_Quaternion.h"

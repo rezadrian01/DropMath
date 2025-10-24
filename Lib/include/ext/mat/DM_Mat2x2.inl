@@ -52,7 +52,7 @@ namespace DropMath
             return StoreColMajor(dst);
             break;
         default:
-            assert(false, "Unknown matrix allignment.");
+            assert(false); // Unknown matrix alignment.
             break;
         }
     }

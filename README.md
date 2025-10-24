@@ -1,6 +1,6 @@
 ﻿# 🚀 DropMath
 
-![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)
+![Version](https://img.shields.io/badge/version-0.7.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 📐 High-performance SIMD-accelerated Math Library for C++  
@@ -23,6 +23,18 @@
   - `Transposed()` and static `Transpose()`
   - `StoreRowMajor()`, `StoreColMajor()`, and flexible `Store()` with alignment mode
   - Identity constructor and float* access via `Data()`
+
+### 🎯 Quaternion Type
+- `Quaternion`: SIMD-accelerated quaternion for 3D rotations using `__m128` and `alignas(16)`, supporting:
+  - Full arithmetic operations and Hamilton product (quaternion multiplication)
+  - `Normalize()`, `Conjugate()`, `Inverse()` operations
+  - Conversion from/to Euler angles and rotation matrices (Mat3x3, Mat4x4)
+  - Axis-angle representation with `ToAxisAngle()` and constructor
+  - `RotateVector()` for efficient 3D vector rotation
+  - `Slerp()` (Spherical Linear Interpolation) for smooth rotation interpolation
+  - `Nlerp()` (Normalized Linear Interpolation) for faster approximation
+  - `LookRotation()`, `FromToRotation()` for common rotation scenarios
+  - Rotation factories: `RotationX()`, `RotationY()`, `RotationZ()`
 
 ### 🧰 Utility Functions
 
@@ -49,7 +61,7 @@
 - Fully assert-based unit tests
 - Clean separation of SIMD and scalar logic
 
-> ⚠️ Note: All SIMD types (`Vec4`, `Mat4x4`) use `alignas(16)` and must be properly aligned if allocated manually (e.g., on heap).
+> ⚠️ Note: All SIMD types (`Vec4`, `Mat4x4`, `Quaternion`) use `alignas(16)` and must be properly aligned if allocated manually (e.g., on heap).
 
 ---
 
@@ -76,6 +88,9 @@ DropMath/
 │       │   │   ├── DM_Vec2.inl
 │       │   │   ├── DM_Vec3.inl
 │       │   │   └── DM_Vec4.inl
+│       │   ├── quat/
+│       │   │   ├── DM_Quaternion.h
+│       │   │   └── DM_Quaternion.inl
 │       │   ├── utils/
 │       │   │   ├── DM_Utils.h
 │       │   │   └── DM_Utils.inl
@@ -92,6 +107,8 @@ DropMath/
 │   │   ├── Test_Vec2.cpp
 │   │   ├── Test_Vec3.cpp
 │   │   └── Test_Vec4.cpp
+│   ├── quat/
+│   │   └── Test_Quaternion.cpp
 │   └── utils/
 │       └── Test_Utils.cpp
 ├── premake5.lua
@@ -105,6 +122,7 @@ DropMath/
 ### 🆕 Structure Highlights
 - `mat/`: Now includes `Mat2x2`, `Mat3x3`, and `Mat4x4` with `.inl` implementation files.
 - `vec/`: All vector types (`Vec2`, `Vec3`, `Vec4`) have dedicated `.inl` files.
+- `quat/`: New folder for `Quaternion` with header and `.inl` implementation.
 - `utils/`: New folder for generic math functions (`DM_Utils.h` + `DM_Utils.inl`).
 - All implementations are now separated from declarations for better organization and compile-time optimization.
 
@@ -174,6 +192,25 @@ int main()
         // Inversion successful.
     }
 
+    // Quaternion rotations.
+    Quaternion q = Quaternion::RotationY(ToRadians(90.0f));
+    Vec3 rotated = q.RotateVector(Vec3::Right()); // Rotate X-axis 90° around Y.
+
+    // Smooth rotation interpolation.
+    Quaternion q1 = Quaternion::RotationY(ToRadians(0.0f));
+    Quaternion q2 = Quaternion::RotationY(ToRadians(180.0f));
+    Quaternion halfway = Quaternion::Slerp(q1, q2, 0.5f); // 90° rotation.
+
+    // Convert to rotation matrix.
+    Mat4x4 rotMatrix = q.ToMatrix4x4();
+
+    // From Euler angles (pitch, yaw, roll).
+    Quaternion fromEuler = Quaternion::FromEuler(
+        ToRadians(30.0f),
+        ToRadians(45.0f),
+        ToRadians(60.0f)
+    );
+
     return 0;
 }
 ```
@@ -190,6 +227,7 @@ All unit tests use `assert()` and can be executed via the `Test` project:
 - `Test_Mat2x2.cpp`
 - `Test_Mat3x3.cpp`
 - `Test_Mat4x4.cpp`
+- `Test_Quaternion.cpp`
 - `Test_Utils.cpp`
 
 The test output will include execution time and will complete silently as long as all assertions pass.
@@ -224,6 +262,14 @@ g++ -std=c++11 -ILib/include Test/vec/Test_Vec3.cpp -o TestVec3
   - Determinant, transpose, and inverse
   - Static `TryInverse()` for safe inversion
   - Row-major and column-major data layout support via `Store()` and `Data()`
+- `Quaternion`:
+  - Full SIMD-accelerated operations: +, -, *, / (Hamilton product)
+  - Normalize, conjugate, inverse operations
+  - Conversion: Euler angles ↔ Quaternion ↔ Rotation matrices (Mat3x3/Mat4x4)
+  - Axis-angle representation and extraction
+  - Vector rotation with `RotateVector()`
+  - Interpolation: `Slerp()` (smooth), `Nlerp()` (fast), `Lerp()` (linear)
+  - Rotation utilities: `LookRotation()`, `FromToRotation()`, axis rotations
 - `Utils`:
   - Generic math: `Lerp`, `Clamp`, `Min`, `Max`, `Abs`, `Sign`, `Sqrt`
   - Angle conversions: `ToRadians`, `ToDegrees`, `WrapPi`
@@ -237,11 +283,12 @@ g++ -std=c++11 -ILib/include Test/vec/Test_Vec3.cpp -o TestVec3
 
 ## 🧭 Roadmap
 
-| Version  | Target Features														 |
+| Version  | Target Features                                                         |
 |----------|-------------------------------------------------------------------------|
-| v0.5.0   | Vec2, Vec3, Vec4, Mat4x4, Test coverage								 |
-| v0.6.0   | Added Mat2x2 and Mat3x3, full matrix Determinant/Inverse API, math utilities (`Floor`, `Ceil`, `WrapPi`, `ToRadians`, etc.), global constants, generic `TryInverse`/`Determinant`, per-type `.inl` split, better test coverage                  |
-| 🔜	   | Planned: more math utilities, quaternion support, render-related helpers such as `LookAt`, projection matrices, and SIMD batch operations  |
+| v0.5.0   | Vec2, Vec3, Vec4, Mat4x4, Test coverage                                 |
+| v0.6.0   | Added Mat2x2 and Mat3x3, full matrix Determinant/Inverse API, math utilities (`Floor`, `Ceil`, `WrapPi`, `ToRadians`, etc.), global constants, generic `TryInverse`/`Determinant`, per-type `.inl` split, better test coverage |
+| v0.7.0   | **Quaternion support** with full SIMD operations, Slerp/Nlerp interpolation, Euler/Matrix conversions, rotation utilities |
+| 🔜       | Planned: render-related helpers such as `LookAt`, projection matrices (Perspective/Orthographic), and SIMD batch operations |
 
 ---
 

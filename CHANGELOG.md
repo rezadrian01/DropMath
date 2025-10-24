@@ -1,3 +1,30 @@
+## [v0.7.0] - 2025-10-24
+### Added
+- `Quaternion` type with full SIMD acceleration using `__m128` and `alignas(16)`
+- Full arithmetic operations: +, -, *, / (Hamilton product for quaternion multiplication)
+- `Normalize()`, `Conjugate()`, `Inverse()` operations for quaternions
+- Conversion from/to Euler angles: `FromEuler()`, `ToEuler()`
+- Conversion from/to rotation matrices: `FromMatrix()` (Mat3x3/Mat4x4), `ToMatrix3x3()`, `ToMatrix4x4()`
+- Axis-angle representation: constructor from axis-angle, `ToAxisAngle()`
+- Vector rotation: `RotateVector()` for efficient 3D vector transformation
+- Interpolation methods:
+  - `Slerp()` - Spherical Linear Interpolation for smooth rotation
+  - `Nlerp()` - Normalized Linear Interpolation for faster approximation
+  - `Lerp()` - Linear interpolation
+- Rotation utilities:
+  - `LookRotation()` - create rotation from forward and up vectors
+  - `FromToRotation()` - rotation from one direction to another
+  - `RotationX()`, `RotationY()`, `RotationZ()` - axis-aligned rotations
+- Static `Dot()` function for quaternion dot product
+- `Test_Quaternion.cpp` with comprehensive unit tests covering all features
+
+### Changed
+- Updated `DropMath.h` to include `ext/quat/DM_Quaternion.h`
+- Updated directory structure to include `ext/quat/` folder
+- Updated README.md with Quaternion documentation and examples
+
+---
+
 ## [v0.6.0] - 2025-07-30
 ### Added
 - `Mat2x2` and `Mat3x3` with full operator overloads and matrix utilities
