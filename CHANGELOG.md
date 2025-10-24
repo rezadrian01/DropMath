@@ -1,5 +1,7 @@
-## [v0.7.0] - 2025-10-24
+## [Unreleased]
+
 ### Added
+
 - `Quaternion` type with full SIMD acceleration using `__m128` and `alignas(16)`
 - Full arithmetic operations: +, -, *, / (Hamilton product for quaternion multiplication)
 - `Normalize()`, `Conjugate()`, `Inverse()` operations for quaternions
@@ -19,6 +21,7 @@
 - `Test_Quaternion.cpp` with comprehensive unit tests covering all features
 
 ### Changed
+
 - Updated `DropMath.h` to include `ext/quat/DM_Quaternion.h`
 - Updated directory structure to include `ext/quat/` folder
 - Updated README.md with Quaternion documentation and examples
@@ -26,7 +29,9 @@
 ---
 
 ## [v0.6.0] - 2025-07-30
+
 ### Added
+
 - `Mat2x2` and `Mat3x3` with full operator overloads and matrix utilities
 - `Determinant()` and `Inverse()` member functions for all matrices
 - Static `TryInverse()` methods for safe inversion
@@ -38,16 +43,20 @@
 - New test files: `Test_Mat2x2.cpp`, `Test_Mat3x3.cpp`, `Test_Utils.cpp`
 
 ### Changed
+
 - Unified math utility function signatures using full overloads (`float`, `double`, `int`)
 - Directory structure updated: added `ext/utils/DM_Utils.h/.inl`
 
 ---
 
 ## [v0.5.0] - 2025-07-28
+
 ### Added
+
 - SIMD-accelerated Vec2, Vec3, Vec4, and Mat4x4
 - Unit tests per feature (Test_VecX.cpp)
 - Premake script and batch file for VS2022
 
 ### Notes
+
 - Initial alpha release to gather community feedback.
